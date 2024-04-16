@@ -10,9 +10,10 @@ import {
     NotFoundException, 
     HttpCode } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { CreateTaskDto } from '../dto/create-task.dto';
-import { UpdateTaskDto } from '../dto/update-task.dto';
-
+import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('Task')
 @Controller('tasks')
 export class TasksController {
 
