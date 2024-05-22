@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, HttpCode } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -24,6 +24,7 @@ export class AuthController {
 
   @Public()
   @Post('/login')
+  @HttpCode(200)
   login( @Body() loginDto: LoginDto  ) {
     return this.authService.login( loginDto );
   }
@@ -33,7 +34,8 @@ export class AuthController {
     return this.authService.update(id, updateAuthDto);
   }
 
-  @Patch(':id')
+  @Patch('/remove/:id')
+  @HttpCode(200)
   removeLogic(@Param('id') id: string) {
     return this.authService.removeLogic(id);
   }

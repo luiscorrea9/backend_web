@@ -11,6 +11,7 @@ import { UserSchema, Usuario } from './schemas/user.schema';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard';
 import { join } from 'path';
+import { Role, RoleSchema } from './schemas/role.schema';
 
 @Module({
   controllers: [AuthController],
@@ -25,6 +26,10 @@ import { join } from 'path';
       {
         name: Usuario.name,
         schema: UserSchema
+      },
+      {
+        name: Role.name,
+        schema: RoleSchema
       }
     ]),
     // PassportModule.register({ defaultStrategy: 'jwt' }),

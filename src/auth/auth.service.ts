@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as twilio from 'twilio';
@@ -11,13 +11,16 @@ import { LoginResponse } from './interfaces/login-response';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { MailerService } from '@nestjs-modules/mailer';
+import { Role } from './schemas/role.schema';
 
 @Injectable()
 export class AuthService {
   private readonly client: twilio.Twilio;
   constructor(
-    @InjectModel( Usuario.name ) 
+    @InjectModel( Usuario.name )
     private userModel: Model<Usuario>,
+    @InjectModel(Role.name) 
+    private roleModel: Model<Role>,
     private jwtService: JwtService,
     private mailerService: MailerService
   ){
@@ -71,13 +74,13 @@ export class AuthService {
     });
   }
 
-  async createSMS(user: string){
+  async createSMS(user: string, cel: string){
     const currentTime: Date = new Date();
    await this.client.messages
   .create({
-     body: `Tasks: ${user}  ingresaste a la app exitosamente ${currentTime}. Si no fuiste tu comunicate con el Admin.`,
+     body: `Tasks: ${user} ingresaste a la app exitosamente ${currentTime.toLocaleDateString()} ${currentTime.toLocaleTimeString()}. Si no fuiste tu comunicate con el Admin.`,
      from: process.env.TWILIO_NUM,
-     to: '+573004017403'
+     to: '+57'+cel
    })
   .then(message => console.log(message.sid));
   }
@@ -91,6 +94,7 @@ export class AuthService {
     const { correo, password } = loginDto;
 
     const user = await this.userModel.findOne({ correo });
+    
     if ( !user ) {
       throw new UnauthorizedException('Credenciales no validas');
     }
@@ -99,11 +103,18 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales no validas');
     }
 
-    const { password:_, ...rest  } = user.toJSON();
-    this.createSMS(user.nombre);
+    if(!user.activo) throw new UnauthorizedException('Su cuenta no se encuentra activa.');
+
+    const rol = await this.roleModel.findById(user.role);
+
+    const { password:_,role, ...rest  } = user.toJSON();
+    
+    //envio sms
+    // this.createSMS(user.nombre, user.cel);
       
     return {
       user: rest,
+      role: rol.rol,
       token: this.getJwtToken({ id: user.id }),
     }
   
@@ -146,7 +157,7 @@ export class AuthService {
       const user= await this.userModel.findByIdAndUpdate(id,{activo: false});
       if(!user) throw new NotFoundException('Usuario no existe');
       return {
-        msg: "se ha eliminado correctamente!"
+        msg: "se ha desactivado la cuenta correctamente!"
       }
     } catch (error) {
       throw new InternalServerErrorException('Problema en BD')

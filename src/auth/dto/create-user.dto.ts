@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsEmail, IsString, MinLength} from 'class-validator';
+import { IsArray, IsBoolean, IsEmail, IsMongoId, IsString, MinLength} from 'class-validator';
 
 
 
@@ -11,13 +11,17 @@ export class CreateUserDto {
     nombre: string;
 
     @IsString()
+    @MinLength(10)
+    cel: string;
+
+    @IsString()
     @MinLength(6)
     password: string;
 
-    @IsBoolean()
+    // @IsBoolean()
     activo?: boolean;
 
-    @IsArray()
-    roles?: string[];
+    @IsMongoId()
+    role: string;
 
 }
