@@ -62,7 +62,17 @@ export class TasksService {
         return this.taskModel.findByIdAndDelete(id);    
     }
 
-    async update(id: string, task: UpdateTaskDto){
-        return this.taskModel.findByIdAndUpdate(id, task, {new: true});
+    async update(id: string, updateTask: UpdateTaskDto){
+
+        try {
+            const task= this.taskModel.findById(id);
+            if(!task ) throw new NotFoundException('no se encontro la tarea');
+
+            const resp= await this.taskModel.findByIdAndUpdate(id, updateTask, {new: true});
+            return resp;
+        } catch (error) {
+            throw new InternalServerErrorException('problema en la BD');
+        }
+        
     }
 }

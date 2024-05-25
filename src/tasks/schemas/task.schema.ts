@@ -20,10 +20,10 @@ export class Task{
     @Prop({default: true})
     estado: boolean;
 
-    @Prop({  type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' })
+    @Prop({required: true,  type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' })
     user: Usuario
 
-    @Prop({  type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' })
+    @Prop({required: true,  type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' })
     userCreate: Usuario
 
     @Prop({default: new Date().getDate()})
@@ -32,6 +32,7 @@ export class Task{
     @Prop()
     fechaFin?: Date
 
+    @Prop()
     comentarios?: string;
     
     @Prop({ type: [String]})

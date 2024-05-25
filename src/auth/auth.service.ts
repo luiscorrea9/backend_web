@@ -78,7 +78,7 @@ export class AuthService {
     const currentTime: Date = new Date();
    await this.client.messages
   .create({
-     body: `Tasks: ${user} ingresaste a la app exitosamente ${currentTime.toLocaleDateString()} ${currentTime.toLocaleTimeString()}. Si no fuiste tu comunicate con el Admin.`,
+     body: `Tasks: ${user} ingresaste a la app exitosamente! ${currentTime.toLocaleDateString()} a las ${currentTime.toLocaleTimeString()} Si no fuiste tu comunicate con el Admin.`,
      from: process.env.TWILIO_NUM,
      to: '+57'+cel
    })
