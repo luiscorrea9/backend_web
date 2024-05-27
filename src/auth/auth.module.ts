@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-// import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule} from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
@@ -12,6 +11,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard';
 import { join } from 'path';
 import { Role, RoleSchema } from './schemas/role.schema';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   controllers: [AuthController],
@@ -20,6 +20,7 @@ import { Role, RoleSchema } from './schemas/role.schema';
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
+    JwtStrategy
   ],
   imports: [
     MongooseModule.forFeature([
@@ -76,6 +77,6 @@ import { Role, RoleSchema } from './schemas/role.schema';
     }),
 
   ],
-  exports: [JwtModule]
+  exports: [JwtModule, JwtStrategy, AuthService]
 })
 export class AuthModule {}

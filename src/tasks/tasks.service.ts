@@ -30,8 +30,7 @@ export class TasksService {
     }
 
     async findOne(id: string){
-        // const idUser= new Types.ObjectId(id);
-
+    
         try {
             const task= this.taskModel.findById(id);
             if(!task ) throw new NotFoundException('no se encontro la tarea');

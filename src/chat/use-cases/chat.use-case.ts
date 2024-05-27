@@ -4,23 +4,19 @@ import {
   VertexAI} from '@google-cloud/vertexai';
 
   interface Options {
+    model: string;
     prompt: string;
 }
 
-// Initialize Vertex with your Cloud project and location
-const vertex_ai = new VertexAI({project: 'formal-purpose-424418-u2', location: 'us-central1'});
-const model = 'gemini-1.5-flash-001';
-
-
-export const generateContent = async (options: Options) => {
-  const {prompt} = options;
+export const generateContent = async (vertex:VertexAI,options: Options) => {
+  const {prompt, model} = options;
   const req = {
     contents: [
       {role: 'user', parts: [{text: prompt}]}
     ],
   };
 
-  const generativeModel = vertex_ai.preview.getGenerativeModel({
+  const generativeModel = vertex.preview.getGenerativeModel({
     model: model,
     generationConfig: {
       'maxOutputTokens': 150,
@@ -53,7 +49,9 @@ export const generateContent = async (options: Options) => {
   const result = await generativeModel.generateContent(req);
   const response = result.response.candidates[0].content.parts[0].text;
 
-  return response;
+  return {
+    answer: response
+  };
   
 }
 

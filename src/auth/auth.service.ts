@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import * as twilio from 'twilio';
+import twilio from 'twilio';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { Usuario } from './schemas/user.schema';
@@ -128,6 +128,20 @@ export class AuthService {
   }
 
  
+  async checkAuthStatus( user: Usuario ){
+    try {
+      const rol = await this.roleModel.findById(user.role);
+      return {
+        user: user,
+        role: rol.rol,
+        token: this.getJwtToken({ id: user._id })
+      };
+    }catch (error) {
+      throw new InternalServerErrorException('problema en la BD');
+    }
+   
+
+  }
 
   async update(id: string, updateUSerDto: UpdateUserDto) {
    this.findUserById(id);
