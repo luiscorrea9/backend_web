@@ -11,8 +11,16 @@ export class TasksService {
     constructor(@InjectModel(Task.name) private taskModel: Model<Task>){}
 
 
-    finAll(){
-        return this.taskModel.find();
+    async finAll(){
+        try {
+            const tasks= this.taskModel.find().populate('user','nombre correo');
+            if(!tasks ) throw new NotFoundException('no se encontraron tareas');
+            return tasks;
+
+        } catch (error) {
+            throw new InternalServerErrorException('problema en la BD');
+        }
+       
     }
 
     async create(createTask: CreateTaskDto){
@@ -32,7 +40,7 @@ export class TasksService {
     async findOne(id: string){
     
         try {
-            const task= this.taskModel.findById(id);
+            const task= this.taskModel.findById(id).populate('userCreate',  'nombre correo');
             if(!task ) throw new NotFoundException('no se encontro la tarea');
             return task;
         } catch (error) {
